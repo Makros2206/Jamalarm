@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jam Digital dengan Alarm dan Nada Dering</title>
+    <style>
+        /* Gaya yang sudah ada */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Gaya lainnya */
+
+        /* Gaya untuk alarm */
+        .alarm-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .alarm-input {
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .set-alarm-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .set-alarm-btn:hover {
+            background-color: darkorange;
+        }
+    </style>
+</head>
+<body class="neon-theme">
+    <div class="clock-container">
+        <!-- Bagian jam dan tema masih sama -->
+        <div class="time-container">
+            <div id="clock">00:00:00</div>
+            <hr id="divider">
+            <div id="date"></div>
+        </div>
+
+        <!-- Bagian input alarm -->
+        <div class="alarm-container">
+            <input type="time" id="alarm-time" class="alarm-input">
+            <button class="set-alarm-btn" onclick="setAlarm()">Setel Alarm</button>
+            <div id="alarm-message"></div>
+        </div>
+
+        <!-- Elemen audio untuk nada dering alarm -->
+        <audio id="alarm-sound" src="nada_dering.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+        let alarmTime = null;
+        let alarmTimeout = null;
+
+        // Fungsi untuk memperbarui jam setiap detik
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('date').textContent = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            // Periksa alarm setiap detik
+            checkAlarm(now);
+        }
+
+        // Setel alarm
+        function setAlarm() {
+            const inputTime = document.getElementById('alarm-time').value;
+            if (inputTime) {
+                alarmTime = inputTime;
+                document.getElementById('alarm-message').textContent = `Alarm disetel pada ${alarmTime}`;
+            } else {
+                document.getElementById('alarm-message').textContent = "Harap masukkan waktu alarm yang valid.";
+            }
+        }
+
+        // Periksa apakah waktu saat ini sama dengan waktu alarm
+        function checkAlarm(now) {
+            if (!alarmTime) return;
+
+            const currentHours = String(now.getHours()).padStart(2, '0');
+            const currentMinutes = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${currentHours}:${currentMinutes}`;
+
+            if (currentTime === alarmTime) {
+                triggerAlarm();
+            }
+        }
+
+        // Fungsi untuk menjalankan alarm
+        function triggerAlarm() {
+            const alarmSound = document.getElementById('alarm-sound');
+            document.getElementById('alarm-message').textContent = "Alarm Berbunyi!";
+            alarmSound.play(); // Memutar nada dering
+            alert("Waktu alarm telah tiba!");
+            alarmTime = null; // Reset alarm setelah berbunyi
+        }
+
+        // Memperbarui jam setiap detik
+        setInterval(updateClock, 1000);
+        updateClock(); // Jalankan sekali saat halaman dimuat
+    </script>
+</body>
+</html>
